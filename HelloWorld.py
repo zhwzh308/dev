@@ -1,6 +1,5 @@
-from bottle import route, run, error, template, static_file
+from bottle import request, route, run, error, template, static_file
 from bottle import BaseRequest
-import urllib2
 @route('/')
 def frontpage():
     return '''
@@ -17,7 +16,22 @@ def frontpage():
 '''
 @route('/', method='POST')
 def query():
-    
+    queryString = request.forms.get('query')
+    tokens = queryString.split()
+    tokens.sort()
+    queryList = []
+    returnPage = []
+    for index in range(len(tokens)):
+        if (index == 0):
+            queryList.append(tokens[index])
+        elif (tokens[index-1] != tokens[index]):
+            queryList.append(tokens[index])
+        elif (index == len(tokens)):
+            queryList.append(tokens[index])
+    returnPage += "The submitted query contains "+str(len(tokens)) + " words<br \>"
+    for token in queryList:
+        returnPage += (token + ' ' + str(queryString.count(token))) + '<br \>'
+    return returnPage
 
 @route('/hello')
 def hello():
